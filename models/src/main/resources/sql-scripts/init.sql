@@ -1,1 +1,1 @@
-INSERT INTO products (title) VALUES ('Mleko');
+INSERT INTO products (title) VALUES ('Mleko'), ('Keksi');

@@ -47,27 +47,27 @@ public class ProductsResource {
                     headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
             )})
     @GET
-    public Response getImageMetadata() {
+    public Response getProduct() {
 
-        List<Product> imageMetadata = productBean.getProductsFilter(uriInfo);
+        List<Product> products = productBean.getProductsFilter(uriInfo);
 
-        return Response.status(Response.Status.OK).entity(imageMetadata).build();
+        return Response.status(Response.Status.OK).entity(products).build();
     }
 
 
-    @Operation(description = "Get metadata for an image.", summary = "Get metadata for an image")
+    @Operation(description = "Get data for a product.", summary = "Get data for a product")
     @APIResponses({
             @APIResponse(responseCode = "200",
-                    description = "Image metadata",
+                    description = "Product",
                     content = @Content(
                             schema = @Schema(implementation = Product.class))
             )})
     @GET
-    @Path("/{imageMetadataId}")
-    public Response getImageMetadata(@Parameter(description = "Metadata ID.", required = true)
-                                     @PathParam("imageMetadataId") Integer imageMetadataId) {
+    @Path("/{productId}")
+    public Response getProduct(@Parameter(description = "Product ID.", required = true)
+                                     @PathParam("productId") Integer productId) {
 
-        Product product = productBean.getProducts(imageMetadataId);
+        Product product = productBean.getProducts(productId);
 
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -76,16 +76,16 @@ public class ProductsResource {
         return Response.status(Response.Status.OK).entity(product).build();
     }
 
-    @Operation(description = "Add image metadata.", summary = "Add metadata")
+    @Operation(description = "Add product.", summary = "Add metadata")
     @APIResponses({
             @APIResponse(responseCode = "201",
-                    description = "Metadata successfully added."
+                    description = "Product successfully added."
             ),
             @APIResponse(responseCode = "405", description = "Validation error .")
     })
     @POST
-    public Response createImageMetadata(@RequestBody(
-            description = "DTO object with image metadata.",
+    public Response createProduct(@RequestBody(
+            description = "DTO object with product.",
             required = true, content = @Content(
             schema = @Schema(implementation = Product.class))) Product product) {
 
@@ -96,29 +96,29 @@ public class ProductsResource {
             product = productBean.createProduct(product);
         }
 
-        return Response.status(Response.Status.CONFLICT).entity(product).build();
+        return Response.status(Response.Status.OK).entity(product).build();
 
     }
 
 
-    @Operation(description = "Update metadata for an image.", summary = "Update metadata")
+    @Operation(description = "Update metadata for a product.", summary = "Update product")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Metadata successfully updated."
+                    description = "Product successfully updated."
             )
     })
     @PUT
-    @Path("{imageMetadataId}")
-    public Response putImageMetadata(@Parameter(description = "Metadata ID.", required = true)
-                                     @PathParam("imageMetadataId") Integer imageMetadataId,
-                                     @RequestBody(
-                                             description = "DTO object with image metadata.",
+    @Path("{productId}")
+    public Response putProduct(@Parameter(description = "Product ID.", required = true)
+                                     @PathParam("productId") Integer productId,
+                               @RequestBody(
+                                             description = "DTO object with product.",
                                              required = true, content = @Content(
                                              schema = @Schema(implementation = Product.class)))
                                      Product product){
 
-        product = productBean.putProduct(imageMetadataId, product);
+        product = productBean.putProduct(productId, product);
 
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -128,11 +128,11 @@ public class ProductsResource {
 
     }
 
-    @Operation(description = "Delete metadata for an image.", summary = "Delete metadata")
+    @Operation(description = "Delete metadata for a product.", summary = "Delete product")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Metadata successfully deleted."
+                    description = "Product successfully deleted."
             ),
             @APIResponse(
                     responseCode = "404",
@@ -140,11 +140,11 @@ public class ProductsResource {
             )
     })
     @DELETE
-    @Path("{imageMetadataId}")
-    public Response deleteImageMetadata(@Parameter(description = "Metadata ID.", required = true)
-                                        @PathParam("imageMetadataId") Integer imageMetadataId){
+    @Path("{productId}")
+    public Response deleteProduct(@Parameter(description = "Product ID.", required = true)
+                                        @PathParam("productId") Integer productId){
 
-        boolean deleted = productBean.deleteProduct(imageMetadataId);
+        boolean deleted = productBean.deleteProduct(productId);
 
         if (deleted) {
             return Response.status(Response.Status.NO_CONTENT).build();

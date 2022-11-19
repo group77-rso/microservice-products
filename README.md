@@ -1,4 +1,4 @@
-# RSO: Template microservice
+# RSO: Products microservice
 
 ## Prerequisites
 
@@ -21,11 +21,11 @@ Available at: localhost:8080/v1/products
 
 ## Docker commands
 ```bash
-docker build -t template-image .   
+docker build -t products -f Dockerfile_with_maven_build .   
 docker images
-docker run template-image    
-docker tag template-image onlygregor/template-image   
-docker push onlygregor/template-image
+docker run products    
+docker tag products onlygregor/products   
+docker push onlygregor/products
 docker ps
 ```
 
@@ -35,7 +35,7 @@ docker network rm rso
 docker network create rso
 docker run -d --name pg-products -e POSTGRES_USER=dbuser -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=products -p 5432:5432 --network rso postgres:13
 docker inspect pg-products
-docker run -p 8080:8080 --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/products onlygregor/template-image:2022-11-14-12-45-13
+docker run -p 8080:8080 --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/products onlygregor/products:2022-11-14-12-45-13
 ```
 
 ## Consul
