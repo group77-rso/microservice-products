@@ -13,15 +13,15 @@ spec:
         app: products
     spec:
       containers:
-        - image: onlygregor/rso-test:latest
+        - image: barbaralipnik/products:latest
           name: products
           env:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-              value: jdbc:postgresql://lucky.db.elephantsql.com/gaabkpkt
+              value: jdbc:postgresql://heffalump.db.elephantsql.com/tnruskwj
             - name: KUMULUZEE_DATASOURCES0_USERNAME
-              value: gaabkpkt
+              value: tnruskwj
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
-              value: ggYa2UyM1YXChuRz7o2kRDLnHi6dAkp9
+              value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
           ports:
             - containerPort: 8080
               name: server
