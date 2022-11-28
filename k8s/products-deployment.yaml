@@ -23,7 +23,7 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
               value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
           ports:
-            - containerPort: 8080
+            - containerPort: 8090
               name: server
               protocol: TCP
 
