@@ -23,7 +23,7 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
               value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
           ports:
-            - containerPort: 8090
+            - containerPort: 8080
               name: server
               protocol: TCP
 
@@ -36,7 +36,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 8090
+    - port: 8080
       protocol: TCP
       targetPort: server
   selector:
