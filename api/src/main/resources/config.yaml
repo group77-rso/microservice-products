@@ -13,5 +13,14 @@ kumuluzee:
       username: dbuser
       password: postgres
       max-pool-size: 20
+  health:
+    checks:
+      data-source-health-check:
+        jndi-name: jdbc/ProductsDS
+        type: liveness
+  metrics:
+    web-instrumentation:
+      - name: products-endpoint
+        url-pattern: /v1/products/*
 rest-properties:
   maintenance-mode: false
