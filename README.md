@@ -35,7 +35,7 @@ docker network rm rso
 docker network create rso
 docker run -d --name pg-products -e POSTGRES_USER=dbuser -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=products -p 5432:5432 --network rso postgres:13
 docker inspect pg-products
-docker run -p 8080:8080 --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/products onlygregor/products:2022-11-14-12-45-13
+docker run -p 8080:8080 --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/products onlygregor/products:latest
 ```
 
 ## Consul
@@ -63,3 +63,11 @@ kubectl delete pod products-deployment-6f59c5d96c-rjz46
 ```
 Secrets: https://kubernetes.io/docs/concepts/configuration/secret/
 
+
+
+Useful stuff
+```bash
+helm install consul hashicorp/consul --set global.name=consul --set global.server.replicas=3 --set global.ui.enabled=true --set global.client.enabled=true --set global.client.replicas=3
+kubectl port-forward svc/consul-ui 6080:80    # Potem pojdi na localhost:6080 :)
+
+```

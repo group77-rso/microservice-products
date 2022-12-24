@@ -22,10 +22,28 @@ spec:
               value: tnruskwj
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
               value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
+            - name: KUMULUZEE_CONFIG_CONSUL_AGENT
+              value: consul-server.ingress-nginx.svc.cluster.local
           ports:
             - containerPort: 8080
               protocol: TCP
 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merchants-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: merchants
+  template:
+    metadata:
+      labels:
+        app: merchants
+    spec:
+      containers:
         - image: barbaralipnik/merchants:latest
           name: merchants
           env:
@@ -36,17 +54,18 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
               value: Y_-mrfwxoxkMj3COJ0XLyKKVO0FHn95o
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
               protocol: TCP
+
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: products
+  name: products-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 8080
       protocol: TCP
@@ -55,30 +74,45 @@ spec:
     app: products
 
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+
+apiVersion: v1
+kind: Service
 metadata:
-  name: products-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: merchants-service
 spec:
-  ingressClassName: nginx
-  rules:
-    - http:
-        paths:
-          - path: /products(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: products
-                port:
-                  number: 8080
-          - path: /merchants(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: merchants
-                port:
-                  number: 8080
+  type: ClusterIP
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    app: merchants
+
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: products-ingress
+#  annotations:
+#    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+#    nginx.ingress.kubernetes.io/use-regex: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#spec:
+#  ingressClassName: nginx
+#  rules:
+#    - http:
+#        paths:
+#          - path: /products(/|$)(.*)
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: products
+#                port:
+#                  number: 8080
+##          - path: /merchants(/|$)(.*)
+##            pathType: Prefix
+##            backend:
+##              service:
+##                name: merchants
+##                port:
+##                  number: 8080
