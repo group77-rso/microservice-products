@@ -24,7 +24,19 @@ spec:
               value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
           ports:
             - containerPort: 8080
-              name: server
+              protocol: TCP
+
+        - image: barbaralipnik/merchants:latest
+          name: merchants
+          env:
+            - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+              value: jdbc:postgresql://heffalump.db.elephantsql.com/xozusiee
+            - name: KUMULUZEE_DATASOURCES0_USERNAME
+              value: xozusiee
+            - name: KUMULUZEE_DATASOURCES0_PASSWORD
+              value: Y_-mrfwxoxkMj3COJ0XLyKKVO0FHn95o
+          ports:
+            - containerPort: 8080
               protocol: TCP
 
 ---
@@ -34,10 +46,39 @@ kind: Service
 metadata:
   name: products
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 8080
       protocol: TCP
-      targetPort: server
+      targetPort: 8080
   selector:
     app: products
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: products-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /products(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: products
+                port:
+                  number: 8080
+          - path: /merchants(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: merchants
+                port:
+                  number: 8080
