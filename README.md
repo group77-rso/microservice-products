@@ -65,9 +65,18 @@ Secrets: https://kubernetes.io/docs/concepts/configuration/secret/
 
 
 
-Useful stuff
+### Useful stuff
 ```bash
 helm install consul hashicorp/consul --set global.name=consul --set global.server.replicas=3 --set global.ui.enabled=true --set global.client.enabled=true --set global.client.replicas=3
 kubectl port-forward svc/consul-ui 6080:80    # Potem pojdi na localhost:6080 :)
 
 ```
+
+### Kubernetes secrets
+```bash
+kubectl create secret generic SERVICENAME-db --from-literal=username=USERNAME --from-literal=password=PASSWORD
+```
+Available secret names:
+- `products-db`
+- `merchants-db`
+

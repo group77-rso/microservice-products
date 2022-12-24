@@ -19,9 +19,15 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
               value: jdbc:postgresql://heffalump.db.elephantsql.com/tnruskwj
             - name: KUMULUZEE_DATASOURCES0_USERNAME
-              value: tnruskwj
+              valueFrom:
+                secretKeyRef:
+                  name: products-db
+                  key: username
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
-              value: JIYKCyTt5Kf14ODfZ9fPSddTdwRNHrYi
+              valueFrom:
+                secretKeyRef:
+                  name: products-db
+                  key: password
             - name: KUMULUZEE_CONFIG_CONSUL_AGENT
               value: http://consul-server.ingress-nginx.svc.cluster.local:8500
           ports:
@@ -62,9 +68,15 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
               value: jdbc:postgresql://heffalump.db.elephantsql.com/xozusiee
             - name: KUMULUZEE_DATASOURCES0_USERNAME
-              value: xozusiee
+              valueFrom:
+                secretKeyRef:
+                  name: merchants-db
+                  key: username
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
-              value: Y_-mrfwxoxkMj3COJ0XLyKKVO0FHn95o
+              valueFrom:
+                secretKeyRef:
+                  name: merchants-db
+                  key: password
             - name: KUMULUZEE_CONFIG_CONSUL_AGENT
               value: http://consul-server.ingress-nginx.svc.cluster.local:8500
           ports:
