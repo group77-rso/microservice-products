@@ -1,5 +1,6 @@
 package com.example.products.api.v1.resources;
 
+import com.example.products.services.config.MicroserviceLocations;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -20,10 +21,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-
 
 
 @Log
@@ -38,6 +45,9 @@ public class ProductsResource {
     @Inject
     private ProductBean productBean;
 
+    @Inject
+    private MicroserviceLocations microserviceLocations;
+    private static HttpURLConnection conn;
 
     @Context
     protected UriInfo uriInfo;
@@ -56,6 +66,54 @@ public class ProductsResource {
         return Response.status(Response.Status.OK).entity(products).build();
     }
 
+    @GET
+    @Path("hehe")
+    public Response testMerchants() {
+        StringBuilder responseContent = new StringBuilder();
+        try{
+            URL url = new URL(microserviceLocations.getMerchants() + "/v1/merchants");
+            conn = (HttpURLConnection) url.openConnection();
+
+            // Request setup
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);// 5000 milliseconds = 5 seconds
+            conn.setReadTimeout(5000);
+
+            // Test if the response from the server is successful
+            int status = conn.getResponseCode();
+
+            BufferedReader reader;
+            String line;
+            if (status >= 300) {
+                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                while ((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+            else {
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+            log.info("response code: " + status);
+            System.out.println(responseContent.toString());
+        }
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            conn.disconnect();
+        }
+
+        return Response.status(Response.Status.NOT_MODIFIED).build();
+    }
+
 
     @Operation(description = "Get data for a product.", summary = "Get data for a product")
     @APIResponses({
@@ -67,7 +125,7 @@ public class ProductsResource {
     @GET
     @Path("/{productId}")
     public Response getProduct(@Parameter(description = "Product ID.", required = true)
-                                     @PathParam("productId") Integer productId) {
+                               @PathParam("productId") Integer productId) {
 
         Product product = productBean.getProducts(productId);
 
@@ -93,8 +151,7 @@ public class ProductsResource {
 
         if (product.getName() == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        else {
+        } else {
             product = productBean.createProduct(product);
         }
 
@@ -112,14 +169,15 @@ public class ProductsResource {
     })
     @PUT
     @Path("{productId}")
-    public Response putProduct(@Parameter(description = "Product ID.", required = true)
-                                     @PathParam("productId") Integer productId,
-                               @RequestBody(
-                                             description = "DTO object with product.",
-                                             required = true, content = @Content(
-                                             schema = @Schema(implementation = Product.class)))
-                                     Product product){
-
+    public Response putProduct(
+            @Parameter(description = "Product ID.", required = true) @PathParam("productId") Integer productId,
+            @RequestBody(
+                    description = "DTO object with product.",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = Product.class)
+                    )
+            ) Product product) {
         product = productBean.putProduct(productId, product);
 
         if (product == null) {
@@ -144,20 +202,16 @@ public class ProductsResource {
     @DELETE
     @Path("{productId}")
     public Response deleteProduct(@Parameter(description = "Product ID.", required = true)
-                                        @PathParam("productId") Integer productId){
+                                  @PathParam("productId") Integer productId) {
 
         boolean deleted = productBean.deleteProduct(productId);
 
         if (deleted) {
             return Response.status(Response.Status.NO_CONTENT).build();
-        }
-        else {
+        } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
-
-
-
 
 
 }

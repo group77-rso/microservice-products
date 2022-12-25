@@ -30,21 +30,23 @@ spec:
                   key: password
             - name: KUMULUZEE_CONFIG_CONSUL_AGENT
               value: http://consul-server.ingress-nginx.svc.cluster.local:8500
+            - name: MICROSERVICELOCATIONS_MERCHANTS
+              value: http://merchants-service.ingress-nginx.svc.cluster.local:8081
           ports:
             - containerPort: 8080
               protocol: TCP
-#          livenessProbe:
-#            httpGet:
-#              path: /health/liveness
-#              port: 8080
-#            initialDelaySeconds: 40
-#            periodSeconds: 3
-#          readinessProbe:
-#            httpGet:
-#              path: /health/readiness
-#              port: 8080
-#            initialDelaySeconds: 40
-#            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 3
 
 ---
 apiVersion: apps/v1
