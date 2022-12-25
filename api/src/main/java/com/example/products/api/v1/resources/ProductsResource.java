@@ -1,5 +1,6 @@
 package com.example.products.api.v1.resources;
 
+import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
@@ -21,9 +22,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 
+@Log
 @ApplicationScoped
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
@@ -48,9 +51,8 @@ public class ProductsResource {
             )})
     @GET
     public Response getProduct() {
-
         List<Product> products = productBean.getProductsFilter(uriInfo);
-
+        log.log(Level.WARNING, "to je slabo");
         return Response.status(Response.Status.OK).entity(products).build();
     }
 
