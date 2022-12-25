@@ -70,6 +70,7 @@ public class ProductsResource {
     @Path("hehe")
     public Response testMerchants() {
         StringBuilder responseContent = new StringBuilder();
+        System.out.println("Will connect to " + microserviceLocations.getMerchants() + "/v1/merchants");
         try{
             URL url = new URL(microserviceLocations.getMerchants() + "/v1/merchants");
             conn = (HttpURLConnection) url.openConnection();
