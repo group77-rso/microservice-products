@@ -1,11 +1,13 @@
 package com.example.products.lib;
 
-import java.time.Instant;
 
 public class Product {
 
     private Integer productId;
     private String name;
+
+    // Ko prikazujemo produkte je zaenkrat dovolj, da navedemo samo ime kategorije.
+    private String category;
 
     public String getName() {
         return name;
@@ -23,4 +25,11 @@ public class Product {
         this.productId = productId;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

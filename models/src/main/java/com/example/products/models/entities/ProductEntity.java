@@ -1,7 +1,6 @@
 package com.example.products.models.entities;
 
 import javax.persistence.*;
-import java.time.Instant;
 
 @Entity
 @Table(name = "products")
@@ -16,8 +15,12 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "name")
+    private String name;
+
+    @ManyToOne  (fetch = FetchType.LAZY)
+    @JoinColumn(name = "category", referencedColumnName = "categoryid")
+    private CategoryEntity category;
 
     public Integer getId() {
         return id;
@@ -27,11 +30,20 @@ public class ProductEntity {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
+    }
+
+    @ManyToOne
+    public CategoryEntity getCategory() {
+        return category;
     }
 }

@@ -4,6 +4,7 @@
         <non-jta-data-source>jdbc/ProductsDS</non-jta-data-source>
 
         <class>com.example.products.models.entities.ProductEntity</class>
+        <class>com.example.products.models.entities.CategoryEntity</class>
         <class>com.example.products.models.converters.InstantAtributeConverter</class>
 
         <properties>

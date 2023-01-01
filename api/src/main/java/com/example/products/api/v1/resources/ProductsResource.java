@@ -1,5 +1,7 @@
 package com.example.products.api.v1.resources;
 
+import com.example.products.lib.Category;
+import com.example.products.services.beans.CategoryBean;
 import com.example.products.services.config.MicroserviceLocations;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -46,6 +48,9 @@ public class ProductsResource {
     private ProductBean productBean;
 
     @Inject
+    private CategoryBean categoryBean;
+
+    @Inject
     private MicroserviceLocations microserviceLocations;
     private static HttpURLConnection conn;
 
@@ -64,6 +69,21 @@ public class ProductsResource {
         List<Product> products = productBean.getProductsFilter(uriInfo);
         log.log(Level.WARNING, "to je slabo");
         return Response.status(Response.Status.OK).entity(products).build();
+    }
+
+    @Operation(description = "Get all categories.", summary = "Get all categories")
+    @APIResponses({
+            @APIResponse(responseCode = "200",
+                    description = "List of categories",
+                    content = @Content(schema = @Schema(implementation = Category.class, type = SchemaType.ARRAY)),
+                    headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
+            )})
+    @GET
+    @Path("categories")
+    public Response getCategory() {
+        List<Category> categories = categoryBean.getCategoriesFilter(uriInfo);
+        log.log(Level.INFO, "Listing all categories");
+        return Response.status(Response.Status.OK).entity(categories).build();
     }
 
     @GET
@@ -124,6 +144,20 @@ public class ProductsResource {
                             schema = @Schema(implementation = Product.class))
             )})
     @GET
+    @Path("categories/{categoryId}")
+    public Response getCategory(@Parameter(description = "Category ID.", required = true)
+                               @PathParam("categoryId") Integer categoryId) {
+
+        Category category = categoryBean.getCategories(categoryId);
+
+        if (category == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.status(Response.Status.OK).entity(category).build();
+    }
+
+    @GET
     @Path("/{productId}")
     public Response getProduct(@Parameter(description = "Product ID.", required = true)
                                @PathParam("productId") Integer productId) {
@@ -133,7 +167,6 @@ public class ProductsResource {
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
         return Response.status(Response.Status.OK).entity(product).build();
     }
 
