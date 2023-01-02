@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -67,7 +67,7 @@ public class ProductsResource {
     @GET
     public Response getProduct() {
         List<Product> products = productBean.getProductsFilter(uriInfo);
-        log.log(Level.WARNING, "to je slabo");
+        log.log(Level.INFO, String.format("Listing %d products", products.size()));
         return Response.status(Response.Status.OK).entity(products).build();
     }
 
@@ -82,7 +82,7 @@ public class ProductsResource {
     @Path("categories")
     public Response getCategory() {
         List<Category> categories = categoryBean.getCategoriesFilter(uriInfo);
-        log.log(Level.INFO, "Listing all categories");
+        log.log(Level.INFO, String.format("Listing %d categories", categories.size()));
         return Response.status(Response.Status.OK).entity(categories).build();
     }
 
@@ -106,7 +106,7 @@ public class ProductsResource {
             BufferedReader reader;
             String line;
             if (status >= 300) {
-                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
                 while ((line = reader.readLine()) != null) {
                     responseContent.append(line);
                 }
@@ -124,8 +124,6 @@ public class ProductsResource {
         }
         catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (ProtocolException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -145,15 +143,11 @@ public class ProductsResource {
             )})
     @GET
     @Path("categories/{categoryId}")
-    public Response getCategory(@Parameter(description = "Category ID.", required = true)
-                               @PathParam("categoryId") Integer categoryId) {
-
+    public Response getCategory(@Parameter(description = "Category ID.", required = true) @PathParam("categoryId") Integer categoryId) {
         Category category = categoryBean.getCategories(categoryId);
-
         if (category == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
         return Response.status(Response.Status.OK).entity(category).build();
     }
 
