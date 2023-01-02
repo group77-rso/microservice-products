@@ -7,7 +7,7 @@ public class Category {
 
     private Integer categoryId;
     private String name;
-    private Set<Product> produscts;
+    private Set<Product> products;
 
     public String getName() {
         return name;
@@ -25,11 +25,11 @@ public class Category {
         this.categoryId = categoryId;
     }
 
-    public Set<Product> getProduscts() {
-        return produscts;
+    public Set<Product> getProducts() {
+        return products;
     }
 
-    public void setProduscts(Set<Product> products) {
-        this.produscts = products;
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }

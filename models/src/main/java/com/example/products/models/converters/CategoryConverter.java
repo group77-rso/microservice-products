@@ -18,7 +18,7 @@ public class CategoryConverter {
         Category dto = new Category();
         dto.setCategoryId(entity.getId());
         dto.setName(entity.getName());
-        dto.setProduscts(getProductsFromCategoryEntity(entity.getProducts()));
+        dto.setProducts(getProductsFromCategoryEntity(entity.getProducts()));
 
         return dto;
     }
