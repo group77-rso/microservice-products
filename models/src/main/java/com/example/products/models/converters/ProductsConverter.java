@@ -10,8 +10,9 @@ public class ProductsConverter {
         Product dto = new Product();
         dto.setProductId(entity.getId());
         dto.setName(entity.getName());
-        dto.setCategoryId(entity.getCategory().getId());
-
+        if (entity.getCategory() != null) {
+            dto.setCategoryId(entity.getCategory().getId());
+        }
         return dto;
 
     }
@@ -21,7 +22,6 @@ public class ProductsConverter {
         ProductEntity entity = new ProductEntity();
         entity.setName(dto.getName());
         entity.setId(dto.getProductId());
-        entity.setCategory(CategoryConverter.toEntity(dto.getCategory()));
 
         return entity;
     }

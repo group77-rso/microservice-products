@@ -1,7 +1,5 @@
 package com.example.products.api.v1.resources;
 
-import com.example.products.lib.Category;
-import com.example.products.services.beans.CategoryBean;
 import com.example.products.services.config.MicroserviceLocations;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -48,9 +46,6 @@ public class ProductsResource {
     private ProductBean productBean;
 
     @Inject
-    private CategoryBean categoryBean;
-
-    @Inject
     private MicroserviceLocations microserviceLocations;
     private static HttpURLConnection conn;
 
@@ -69,21 +64,6 @@ public class ProductsResource {
         List<Product> products = productBean.getProductsFilter(uriInfo);
         log.log(Level.INFO, String.format("Listing %d products", products.size()));
         return Response.status(Response.Status.OK).entity(products).build();
-    }
-
-    @Operation(description = "Get all categories.", summary = "Get all categories")
-    @APIResponses({
-            @APIResponse(responseCode = "200",
-                    description = "List of categories",
-                    content = @Content(schema = @Schema(implementation = Category.class, type = SchemaType.ARRAY)),
-                    headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
-            )})
-    @GET
-    @Path("categories")
-    public Response getCategory() {
-        List<Category> categories = categoryBean.getCategoriesFilter(uriInfo);
-        log.log(Level.INFO, String.format("Listing %d categories", categories.size()));
-        return Response.status(Response.Status.OK).entity(categories).build();
     }
 
     @GET
@@ -133,24 +113,6 @@ public class ProductsResource {
         return Response.status(Response.Status.NOT_MODIFIED).build();
     }
 
-
-    @Operation(description = "Get data for a product.", summary = "Get data for a product")
-    @APIResponses({
-            @APIResponse(responseCode = "200",
-                    description = "Product",
-                    content = @Content(
-                            schema = @Schema(implementation = Product.class))
-            )})
-    @GET
-    @Path("categories/{categoryId}")
-    public Response getCategory(@Parameter(description = "Category ID.", required = true) @PathParam("categoryId") Integer categoryId) {
-        Category category = categoryBean.getCategories(categoryId);
-        if (category == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.status(Response.Status.OK).entity(category).build();
-    }
-
     @GET
     @Path("/{productId}")
     public Response getProduct(@Parameter(description = "Product ID.", required = true)
@@ -161,10 +123,11 @@ public class ProductsResource {
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        log.info(String.format("Fetching product for id %d", productId));
         return Response.status(Response.Status.OK).entity(product).build();
     }
 
-    @Operation(description = "Add product.", summary = "Add metadata")
+    @Operation(description = "Add product.", summary = "Add product")
     @APIResponses({
             @APIResponse(responseCode = "201",
                     description = "Product successfully added."
@@ -183,11 +146,6 @@ public class ProductsResource {
         }
         else
         {
-            if (product.getCategoryId() != null)
-            {
-                Integer categroyId = product.getCategoryId();
-                product.setCategory(categoryBean.getCategories(categroyId));
-            }
             product = productBean.createProduct(product);
         }
 
@@ -220,8 +178,8 @@ public class ProductsResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        log.info(String.format("Updating product with id %d", productId));
         return Response.status(Response.Status.NOT_MODIFIED).build();
-
     }
 
     @Operation(description = "Delete metadata for a product.", summary = "Delete product")
@@ -243,6 +201,7 @@ public class ProductsResource {
         boolean deleted = productBean.deleteProduct(productId);
 
         if (deleted) {
+            log.info(String.format("Product with id %d deleted.", productId));
             return Response.status(Response.Status.NO_CONTENT).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

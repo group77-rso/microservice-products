@@ -7,9 +7,11 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.example.products.models.entities.CategoryEntity;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 
@@ -60,11 +62,24 @@ public class ProductBean {
     public Product createProduct(Product product) {
 
         ProductEntity productEntity = ProductsConverter.toEntity(product);
+        if (product.getCategoryId() != null) {
+            CategoryEntity category = em.find(CategoryEntity.class, product.getCategoryId());
+            productEntity.setCategory(category);
+        }
 
         try {
             beginTx();
             em.persist(productEntity);
             commitTx();
+
+            if (productEntity.getCategory() != null){
+                // add product to category
+                CategoryEntity category = productEntity.getCategory();
+                Set<ProductEntity> categoryProducts = category.getProducts();
+                categoryProducts.add(productEntity);
+                category.setProducts(categoryProducts);
+                em.persist(category);
+            }
         }
         catch (Exception e) {
             rollbackTx();
@@ -74,6 +89,7 @@ public class ProductBean {
             throw new RuntimeException("Entity was not persisted");
         }
 
+        log.info(String.format("new product with id %d created.", productEntity.getId()));
         return ProductsConverter.toDto(productEntity);
     }
 
@@ -86,6 +102,16 @@ public class ProductBean {
         }
 
         ProductEntity updatedProductEntity = ProductsConverter.toEntity(product);
+         if (product.getCategoryId() == null) {
+             updatedProductEntity.setCategory(c.getCategory());
+        }
+         else {
+             CategoryEntity category = em.find(CategoryEntity.class, product.getCategoryId());
+             updatedProductEntity.setCategory(category);
+         }
+         if (product.getName() == null) {
+             updatedProductEntity.setName(c.getName());
+         }
 
         try {
             beginTx();
