@@ -131,16 +131,25 @@ public class ProductBean {
         ProductEntity product = em.find(ProductEntity.class, id);
 
         if (product != null) {
+
+            // poiscemo kategorijo v kateri je ta produkt in ga odstranimo
+            TypedQuery<CategoryEntity> query = em.createNamedQuery("CategoryEntity.getAll", CategoryEntity.class);
+            List<CategoryEntity> resultList = query.getResultList();
+
+            for (CategoryEntity category : resultList) {
+                Set<ProductEntity> categoryProducts = category.getProducts();
+                categoryProducts.remove(product);
+            }
+
             try {
                 beginTx();
+                resultList.forEach(c -> em.merge(c));
                 em.remove(product);
                 commitTx();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 rollbackTx();
             }
-        }
-        else {
+        } else {
             return false;
         }
 

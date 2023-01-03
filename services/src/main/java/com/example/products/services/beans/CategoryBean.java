@@ -29,7 +29,7 @@ public class CategoryBean {
     public List<Category> getCategories() {
 
         TypedQuery<CategoryEntity> query = em.createNamedQuery(
-                "CategorysEntity.getAll", CategoryEntity.class);
+                "CategoryEntity.getAll", CategoryEntity.class);
 
         List<CategoryEntity> resultList = query.getResultList();
 

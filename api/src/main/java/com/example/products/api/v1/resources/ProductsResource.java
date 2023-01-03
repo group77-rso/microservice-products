@@ -201,7 +201,7 @@ public class ProductsResource {
         boolean deleted = productBean.deleteProduct(productId);
 
         if (deleted) {
-            log.info(String.format("Product with id %d deleted.", productId));
+            log.info(String.format("Product with id %d was deleted.", productId));
             return Response.status(Response.Status.NO_CONTENT).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

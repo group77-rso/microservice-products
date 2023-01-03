@@ -7,6 +7,7 @@ import com.example.products.models.entities.ProductEntity;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CategoryConverter {
 
@@ -36,6 +37,10 @@ public class CategoryConverter {
 
         CategoryEntity entity = new CategoryEntity();
         entity.setName(dto.getName());
+        if (dto.getProducts() != null) {
+            Set<ProductEntity> productEntities = dto.getProducts().stream().map(ProductsConverter::toEntity).collect(Collectors.toSet());
+            entity.setProducts(productEntities);
+        }
 
         return entity;
     }

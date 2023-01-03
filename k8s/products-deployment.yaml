@@ -32,8 +32,6 @@ spec:
               value: http://consul-server.ingress-nginx.svc.cluster.local:8500
             - name: MICROSERVICELOCATIONS_MERCHANTS
               value: http://merchants-service.ingress-nginx.svc.cluster.local:8081
-            - name: MICROSERVICELOCATIONS_PRODUCTS
-              value: http://products-service.ingress-nginx.svc.cluster.local:8080
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -83,6 +81,8 @@ spec:
                   key: password
             - name: KUMULUZEE_CONFIG_CONSUL_AGENT
               value: http://consul-server.ingress-nginx.svc.cluster.local:8500
+            - name: MICROSERVICELOCATIONS_PRODUCTS
+            value: http://products-service.ingress-nginx.svc.cluster.local:8080
           ports:
             - containerPort: 8081
               protocol: TCP
