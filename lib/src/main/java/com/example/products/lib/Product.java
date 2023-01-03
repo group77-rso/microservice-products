@@ -5,9 +5,8 @@ public class Product {
 
     private Integer productId;
     private String name;
-
-    // Ko prikazujemo produkte je zaenkrat dovolj, da navedemo samo ime kategorije.
-    private String category;
+    private Category category;
+    private Integer categoryId;
 
     public String getName() {
         return name;
@@ -25,11 +24,19 @@ public class Product {
         this.productId = productId;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

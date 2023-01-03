@@ -54,9 +54,7 @@ public class ProductBean {
             throw new NotFoundException();
         }
 
-        Product product = ProductsConverter.toDto(productEntity);
-
-        return product;
+        return ProductsConverter.toDto(productEntity);
     }
 
     public Product createProduct(Product product) {

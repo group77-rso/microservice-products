@@ -1,23 +1,21 @@
-INSERT INTO category (categoryid, name) VALUES (1, 'Mleko');
-INSERT INTO category (categoryid, name) VALUES (2, 'Moka');
-INSERT INTO category (categoryid, name) VALUES (3, 'Jajca');
-INSERT INTO category (categoryid, name) VALUES (4, 'Sladkor');
-INSERT INTO category (categoryid, name) VALUES (5, 'Sladoled');
-INSERT INTO category (categoryid, name) VALUES (6, 'Trampolin');
+INSERT INTO category (categoryid, name) VALUES (1001, 'Mleko');
+INSERT INTO category (categoryid, name) VALUES (1002, 'Moka');
+INSERT INTO category (categoryid, name) VALUES (1003, 'Jajca');
+INSERT INTO category (categoryid, name) VALUES (1004, 'Sladkor');
+INSERT INTO category (categoryid, name) VALUES (1005, 'Priboljški');
 
 
 
-INSERT INTO products (id, name, category) VALUES (1, 'Alpsko mleko', 1 );
-INSERT INTO products (id, name, category) VALUES (2, 'Mleko pomurskih mlekarn', 1);
-INSERT INTO products (id, name, category) VALUES (3, 'Rižev napitek', 1);
-INSERT INTO products (id, name, category) VALUES (4, 'Kozje mleko', 1);
-INSERT INTO products (id, name, category) VALUES (5, 'Bela gladka moka', 2);
-INSERT INTO products (id, name, category) VALUES (6, 'Bela ostra moka', 2);
-INSERT INTO products (id, name, category) VALUES (7, 'Pirina moka', 2);
-INSERT INTO products (id, name, category) VALUES (8, 'Ajdova moka', 2);
-INSERT INTO products (id, name, category) VALUES (9, 'Jajca', 3);
-INSERT INTO products (id, name, category) VALUES (10, 'Beli kristalni sladkor', 4);
-INSERT INTO products (id, name, category) VALUES (11, 'Kokosov sladkor', 4);
-INSERT INTO products (id, name, category) VALUES (12, 'Vanilijevi korneti', 5);
-INSERT INTO products (id, name, category) VALUES (13, 'Čokoladna lučka', 5);
+INSERT INTO products (id, name, category) VALUES (1001, 'Alpsko mleko', 1001);
+INSERT INTO products (id, name, category) VALUES (1002, 'Pomursko mlejko', 1001);
+INSERT INTO products (id, name, category) VALUES (1003, 'Rižev napitek', 1001);
+INSERT INTO products (id, name, category) VALUES (1004, 'Kozje mleko', 1001);
+INSERT INTO products (id, name, category) VALUES (1005, 'Bela moka', 1002);
+INSERT INTO products (id, name, category) VALUES (1006, 'Brezglutenska moka', 1002);
+INSERT INTO products (id, name, category) VALUES (1007, 'Pirina moka', 1002);
+INSERT INTO products (id, name, category) VALUES (1008, 'Jajca', 1003);
+INSERT INTO products (id, name, category) VALUES (1009, 'Beli kristalni sladkor', 1004);
+INSERT INTO products (id, name, category) VALUES (1010, 'Sladkor v prahu', 1004);
+INSERT INTO products (id, name, category) VALUES (1011, 'Smoki', 1005);
+INSERT INTO products (id, name, category) VALUES (1012, 'Žvečilni gumi orbit', 1005);
 

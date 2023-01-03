@@ -177,9 +177,17 @@ public class ProductsResource {
             required = true, content = @Content(
             schema = @Schema(implementation = Product.class))) Product product) {
 
-        if (product.getName() == null) {
+        if (product.getName() == null)
+        {
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } else {
+        }
+        else
+        {
+            if (product.getCategoryId() != null)
+            {
+                Integer categroyId = product.getCategoryId();
+                product.setCategory(categoryBean.getCategories(categroyId));
+            }
             product = productBean.createProduct(product);
         }
 
