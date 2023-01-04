@@ -1,5 +1,6 @@
 package com.example.products.api.v1.resources;
 
+import com.example.products.lib.Hello;
 import com.example.products.services.config.MicroserviceLocations;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -29,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -206,6 +208,18 @@ public class ProductsResource {
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+    }
+
+    @GET
+    @Path("/slow")
+    public Response slowHello() throws InterruptedException {
+
+        TimeUnit.SECONDS.sleep(5);
+
+        Hello hello = new Hello();
+        hello.setMessege("Hello!");
+
+        return Response.status(Response.Status.OK).entity(hello).build();
     }
 
 
