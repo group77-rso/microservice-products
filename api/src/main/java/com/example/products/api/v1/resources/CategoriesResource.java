@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -42,6 +43,7 @@ public class CategoriesResource {
     protected UriInfo uriInfo;
 
 
+    @GET
     @Operation(description = "Get all categories.", summary = "Get all categories")
     @APIResponses({
             @APIResponse(responseCode = "200",
@@ -49,23 +51,22 @@ public class CategoriesResource {
                     content = @Content(schema = @Schema(implementation = Category.class, type = SchemaType.ARRAY)),
                     headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
             )})
-    @GET
     public Response getCategory() {
         List<Category> categories = categoryBean.getCategoriesFilter(uriInfo);
         log.log(Level.INFO, String.format("Listing %d categories", categories.size()));
         return Response.status(Response.Status.OK).entity(categories).build();
     }
 
-    @Operation(description = "Get data for a category.", summary = "Get data for a category")
+    @GET
+    @Operation(description = "Get data for a category for id.", summary = "Get category")
     @APIResponses({
             @APIResponse(responseCode = "200",
                     description = "Category",
                     content = @Content(
                             schema = @Schema(implementation = Product.class))
             )})
-    @GET
     @Path("/{categoryId}")
-    public Response getCategory(@Parameter(description = "Category ID.", required = true) @PathParam("categoryId") Integer categoryId) {
+    public Response getCategory(@Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
         Category category = categoryBean.getCategories(categoryId);
         if (category == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -74,16 +75,22 @@ public class CategoriesResource {
         return Response.status(Response.Status.OK).entity(category).build();
     }
 
-    @Operation(description = "Add category.", summary = "Add category")
+    @POST
+    @Operation(description = "Add a new category.", summary = "Add category")
     @APIResponses({
             @APIResponse(responseCode = "201",
                     description = "Category successfully added."
             ),
             @APIResponse(responseCode = "405", description = "Validation error .")
     })
-    @POST
+    @RequestBody(description = "Details of the category to be created", required = true,
+            content = @Content(
+                    schema = @Schema(implementation = Category.class),
+                    examples = @ExampleObject(name = "Creating category", value = "{\n" +
+                            "    \"name\": \"Sladoled\"\n" +
+                            "}")))
     public Response careateCategory(@RequestBody(
-            description = "DTO object with product.",
+            description = "DTO object with category.",
             required = true, content = @Content(
             schema = @Schema(implementation = Category.class))) Category category) {
 
@@ -96,11 +103,12 @@ public class CategoriesResource {
             category = categoryBean.createCategory(category);
         }
 
+        log.info(String.format("New category with id %d was created.", category.getCategoryId()));
         return Response.status(Response.Status.OK).entity(category).build();
 
     }
 
-
+    @PUT
     @Operation(description = "Update information about a category.", summary = "Update category")
     @APIResponses({
             @APIResponse(
@@ -108,10 +116,15 @@ public class CategoriesResource {
                     description = "Category successfully updated."
             )
     })
-    @PUT
+    @RequestBody(description = "Details of the Item to be created", required = true,
+            content = @Content(
+                    schema = @Schema(implementation = Category.class),
+                    examples = @ExampleObject(name = "Updating category", value = "{\n" +
+                            "    \"name\": \"Updated name\"\n" +
+                            "}")))
     @Path("{categoryId}")
     public Response putProduct(
-            @Parameter(description = "Category ID.", required = true) @PathParam("categoryId") Integer categoryId,
+            @Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId,
             @RequestBody(
                     description = "DTO object with category.",
                     required = true,
@@ -126,9 +139,10 @@ public class CategoriesResource {
         }
 
         log.info(String.format("Updating category with id %d", categoryId));
-        return Response.status(Response.Status.NOT_MODIFIED).build();
+        return Response.status(Response.Status.OK).build();
     }
 
+    @DELETE
     @Operation(description = "Delete data for a category.", summary = "Delete category")
     @APIResponses({
             @APIResponse(
@@ -140,10 +154,8 @@ public class CategoriesResource {
                     description = "Not found."
             )
     })
-    @DELETE
     @Path("{categoryId}")
-    public Response deleteProduct(@Parameter(description = "Category ID.", required = true)
-                                  @PathParam("categoryId") Integer categoryId) {
+    public Response deleteProduct(@Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
 
         boolean deleted = categoryBean.deleteCategory(categoryId);
 

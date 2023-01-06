@@ -7,6 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -54,6 +55,7 @@ public class ProductsResource {
     @Context
     protected UriInfo uriInfo;
 
+    @GET
     @Operation(description = "Get all products.", summary = "Get all products")
     @APIResponses({
             @APIResponse(responseCode = "200",
@@ -61,13 +63,13 @@ public class ProductsResource {
                     content = @Content(schema = @Schema(implementation = Product.class, type = SchemaType.ARRAY)),
                     headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
             )})
-    @GET
     public Response getProduct() {
         List<Product> products = productBean.getProductsFilter(uriInfo);
         log.log(Level.INFO, String.format("Listing %d products", products.size()));
         return Response.status(Response.Status.OK).entity(products).build();
     }
 
+    // todo: remove/repurpose this method!
     @GET
     @Path("hehe")
     public Response testMerchants() {
@@ -116,8 +118,9 @@ public class ProductsResource {
     }
 
     @GET
+    @Operation(description = "Get product by id.", summary = "Get a product ")
     @Path("/{productId}")
-    public Response getProduct(@Parameter(description = "Product ID.", required = true)
+    public Response getProduct(@Parameter(description = "Product ID.", required = true, example = "1001")
                                @PathParam("productId") Integer productId) {
 
         Product product = productBean.getProducts(productId);
@@ -129,14 +132,20 @@ public class ProductsResource {
         return Response.status(Response.Status.OK).entity(product).build();
     }
 
-    @Operation(description = "Add product.", summary = "Add product")
+    @POST
+    @Operation(description = "Add product to the database.", summary = "Add a product")
     @APIResponses({
             @APIResponse(responseCode = "201",
-                    description = "Product successfully added."
-            ),
+                    description = "Product successfully added."),
             @APIResponse(responseCode = "405", description = "Validation error .")
     })
-    @POST
+    @RequestBody(description = "Details of the product to be created", required = true,
+            content = @Content(
+                    schema = @Schema(implementation = Product.class),
+                    examples = @ExampleObject(name = "UCreating product", value = "{\n" +
+                            "    \"name\": \"Kokosovo mleko\",\n" +
+                            "    \"categoryId\": 1001\n" +
+                            "}")))
     public Response createProduct(@RequestBody(
             description = "DTO object with product.",
             required = true, content = @Content(
@@ -151,22 +160,28 @@ public class ProductsResource {
             product = productBean.createProduct(product);
         }
 
+        log.info(String.format("New product with id %d was created.", product.getProductId()));
         return Response.status(Response.Status.OK).entity(product).build();
 
     }
 
 
-    @Operation(description = "Update metadata for a product.", summary = "Update product")
+    @PUT
+    @Operation(description = "Update information for a product.", summary = "Update product")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Product successfully updated."
-            )
+                    description = "Product successfully updated.")
     })
-    @PUT
+    @RequestBody(description = "Details to update", required = true,
+            content = @Content(
+                    schema = @Schema(implementation = Product.class),
+                    examples = @ExampleObject(name = "Updating product", value = "{\n" +
+                            "    \"name\": \"Updated name\"\n" +
+                            "}")))
     @Path("{productId}")
     public Response putProduct(
-            @Parameter(description = "Product ID.", required = true) @PathParam("productId") Integer productId,
+            @Parameter(description = "Product ID.", required = true, example = "1001") @PathParam("productId") Integer productId,
             @RequestBody(
                     description = "DTO object with product.",
                     required = true,
@@ -181,10 +196,11 @@ public class ProductsResource {
         }
 
         log.info(String.format("Updating product with id %d", productId));
-        return Response.status(Response.Status.NOT_MODIFIED).build();
+        return Response.status(Response.Status.OK).build();
     }
 
-    @Operation(description = "Delete metadata for a product.", summary = "Delete product")
+    @DELETE
+    @Operation(description = "Delete data for a product.", summary = "Delete product")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -192,13 +208,10 @@ public class ProductsResource {
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Not found."
-            )
+                    description = "Not found.")
     })
-    @DELETE
     @Path("{productId}")
-    public Response deleteProduct(@Parameter(description = "Product ID.", required = true)
-                                  @PathParam("productId") Integer productId) {
+    public Response deleteProduct(@Parameter(description = "Product ID.", required = true) @PathParam("productId") Integer productId) {
 
         boolean deleted = productBean.deleteProduct(productId);
 
@@ -211,6 +224,7 @@ public class ProductsResource {
     }
 
     @GET
+    @Operation(description = "Waits for 5 second then returns a greeting.", summary = "Dummy method for demonstration purposes")
     @Path("/slow")
     public Response slowHello() throws InterruptedException {
 
