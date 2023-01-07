@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -63,10 +64,12 @@ public class ProductsResource {
                     content = @Content(schema = @Schema(implementation = Product.class, type = SchemaType.ARRAY)),
                     headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
             )})
-    public Response getProduct() {
+    public Response getProduct(@Parameter(hidden = true) @Parameter(hidden = true) @HeaderParam("requestId") String requestId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
+
         List<Product> products = productBean.getProductsFilter(uriInfo);
-        log.log(Level.INFO, String.format("Listing %d products", products.size()));
-        return Response.status(Response.Status.OK).entity(products).build();
+        log.log(Level.INFO, String.format("Listing %d products", products.size()) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(products).build();
     }
 
     // todo: remove/repurpose this method!
@@ -120,16 +123,18 @@ public class ProductsResource {
     @GET
     @Operation(description = "Get product by id.", summary = "Get a product ")
     @Path("/{productId}")
-    public Response getProduct(@Parameter(description = "Product ID.", required = true, example = "1001")
+    public Response getProduct(@Parameter(hidden = true) @Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                               @Parameter(description = "Product ID.", required = true, example = "1001")
                                @PathParam("productId") Integer productId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         Product product = productBean.getProducts(productId);
 
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        log.info(String.format("Fetching product for id %d", productId));
-        return Response.status(Response.Status.OK).entity(product).build();
+        log.info(String.format("Fetching product for id %d", productId) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(product).build();
     }
 
     @POST
@@ -146,10 +151,12 @@ public class ProductsResource {
                             "    \"name\": \"Kokosovo mleko\",\n" +
                             "    \"categoryId\": 1001\n" +
                             "}")))
-    public Response createProduct(@RequestBody(
+    public Response createProduct(@Parameter(hidden = true) @Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                  @RequestBody(
             description = "DTO object with product.",
             required = true, content = @Content(
             schema = @Schema(implementation = Product.class))) Product product) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         if (product.getName() == null)
         {
@@ -160,8 +167,8 @@ public class ProductsResource {
             product = productBean.createProduct(product);
         }
 
-        log.info(String.format("New product with id %d was created.", product.getProductId()));
-        return Response.status(Response.Status.OK).entity(product).build();
+        log.info(String.format("New product with id %d was created.", product.getProductId()) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(product).build();
 
     }
 
@@ -180,7 +187,7 @@ public class ProductsResource {
                             "    \"name\": \"Updated name\"\n" +
                             "}")))
     @Path("{productId}")
-    public Response putProduct(
+    public Response putProduct(@Parameter(hidden = true) @Parameter(hidden = true) @HeaderParam("requestId") String requestId,
             @Parameter(description = "Product ID.", required = true, example = "1001") @PathParam("productId") Integer productId,
             @RequestBody(
                     description = "DTO object with product.",
@@ -189,14 +196,16 @@ public class ProductsResource {
                             schema = @Schema(implementation = Product.class)
                     )
             ) Product product) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
+
         product = productBean.putProduct(productId, product);
 
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        log.info(String.format("Updating product with id %d", productId));
-        return Response.status(Response.Status.OK).build();
+        log.info(String.format("Updating product with id %d", productId) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).build();
     }
 
     @DELETE
@@ -211,29 +220,32 @@ public class ProductsResource {
                     description = "Not found.")
     })
     @Path("{productId}")
-    public Response deleteProduct(@Parameter(description = "Product ID.", required = true) @PathParam("productId") Integer productId) {
+    public Response deleteProduct(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                  @Parameter(description = "Product ID.", required = true) @PathParam("productId") Integer productId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         boolean deleted = productBean.deleteProduct(productId);
 
         if (deleted) {
-            log.info(String.format("Product with id %d was deleted.", productId));
-            return Response.status(Response.Status.NO_CONTENT).build();
+            log.info(String.format("Product with id %d was deleted.", productId) + " - requestId: " + requestId);
+            return Response.status(Response.Status.NO_CONTENT).header("requestId", requestId).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).header("requestId", requestId).build();
         }
     }
 
     @GET
     @Operation(description = "Waits for 5 second then returns a greeting.", summary = "Dummy method for demonstration purposes")
     @Path("/slow")
-    public Response slowHello() throws InterruptedException {
+    public Response slowHello(@Parameter(hidden = true) @HeaderParam("requestId") String requestId) throws InterruptedException {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         TimeUnit.SECONDS.sleep(5);
 
         Hello hello = new Hello();
         hello.setMessege("Hello!");
 
-        return Response.status(Response.Status.OK).entity(hello).build();
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(hello).build();
     }
 
 

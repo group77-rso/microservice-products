@@ -101,6 +101,48 @@ spec:
 
 
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraper
+  template:
+    metadata:
+      labels:
+        app: scraper
+    spec:
+      containers:
+        - image: barbaralipnik/scraper:latest
+          name: scraper
+          env:
+            - name: KUMULUZEE_CONFIG_CONSUL_AGENT
+              value: http://consul-server.ingress-nginx.svc.cluster.local:8500
+            - name: MICROSERVICELOCATIONS_MERCHANTS
+              value: http://merchants-service.ingress-nginx.svc.cluster.local:8081
+            - name: MICROSERVICELOCATIONS_PRODUCTS
+            value: http://products-service.ingress-nginx.svc.cluster.local:8080
+          ports:
+            - containerPort: 8082
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 8082
+            initialDelaySeconds: 40
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 8082
+            initialDelaySeconds: 40
+            periodSeconds: 3
+
+
+---
 
 apiVersion: v1
 kind: Service
@@ -129,6 +171,21 @@ spec:
       targetPort: 8081
   selector:
     app: merchants
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: scraper-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8082
+      protocol: TCP
+      targetPort: 8082
+  selector:
+    app: scraper
 
 #---
 #apiVersion: networking.k8s.io/v1

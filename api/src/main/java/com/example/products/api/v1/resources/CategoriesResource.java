@@ -15,6 +15,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
+import java.util.UUID;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -51,10 +53,12 @@ public class CategoriesResource {
                     content = @Content(schema = @Schema(implementation = Category.class, type = SchemaType.ARRAY)),
                     headers = {@Header(name = "X-Total-Count", description = "Number of objects in list")}
             )})
-    public Response getCategory() {
+    public Response getCategory(@Parameter(hidden = true) @HeaderParam("requestId") String requestId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
+
         List<Category> categories = categoryBean.getCategoriesFilter(uriInfo);
-        log.log(Level.INFO, String.format("Listing %d categories", categories.size()));
-        return Response.status(Response.Status.OK).entity(categories).build();
+        log.log(Level.INFO, String.format("Listing %d categories", categories.size()) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(categories).build();
     }
 
     @GET
@@ -66,13 +70,16 @@ public class CategoriesResource {
                             schema = @Schema(implementation = Product.class))
             )})
     @Path("/{categoryId}")
-    public Response getCategory(@Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
+    public Response getCategory(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                @Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
+
         Category category = categoryBean.getCategories(categoryId);
         if (category == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        log.info(String.format("Fetching category for id %d", categoryId));
-        return Response.status(Response.Status.OK).entity(category).build();
+        log.info(String.format("Fetching category for id %d", categoryId) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(category).build();
     }
 
     @POST
@@ -89,10 +96,13 @@ public class CategoriesResource {
                     examples = @ExampleObject(name = "Creating category", value = "{\n" +
                             "    \"name\": \"Sladoled\"\n" +
                             "}")))
-    public Response careateCategory(@RequestBody(
+    public Response careateCategory(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                    @RequestBody(
             description = "DTO object with category.",
             required = true, content = @Content(
             schema = @Schema(implementation = Category.class))) Category category) {
+
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         if (category.getName() == null)
         {
@@ -103,8 +113,8 @@ public class CategoriesResource {
             category = categoryBean.createCategory(category);
         }
 
-        log.info(String.format("New category with id %d was created.", category.getCategoryId()));
-        return Response.status(Response.Status.OK).entity(category).build();
+        log.info(String.format("New category with id %d was created.", category.getCategoryId()) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).entity(category).build();
 
     }
 
@@ -123,7 +133,7 @@ public class CategoriesResource {
                             "    \"name\": \"Updated name\"\n" +
                             "}")))
     @Path("{categoryId}")
-    public Response putProduct(
+    public Response putProduct(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
             @Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId,
             @RequestBody(
                     description = "DTO object with category.",
@@ -132,14 +142,16 @@ public class CategoriesResource {
                             schema = @Schema(implementation = Category.class)
                     )
             ) Category category) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
+
         category = categoryBean.putCategory(categoryId, category);
 
         if (category == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        log.info(String.format("Updating category with id %d", categoryId));
-        return Response.status(Response.Status.OK).build();
+        log.info(String.format("Updating category with id %d", categoryId) + " - requestId: " + requestId);
+        return Response.status(Response.Status.OK).header("requestId", requestId).build();
     }
 
     @DELETE
@@ -155,15 +167,17 @@ public class CategoriesResource {
             )
     })
     @Path("{categoryId}")
-    public Response deleteProduct(@Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
+    public Response deleteProduct(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                  @Parameter(description = "Category ID.", required = true, example = "1001") @PathParam("categoryId") Integer categoryId) {
+        requestId = requestId != null ? requestId : UUID.randomUUID().toString();
 
         boolean deleted = categoryBean.deleteCategory(categoryId);
 
         if (deleted) {
-            log.info(String.format("Category with id %d deleted.", categoryId));
-            return Response.status(Response.Status.NO_CONTENT).build();
+            log.info(String.format("Category with id %d deleted.", categoryId) + " - requestId: " + requestId);
+            return Response.status(Response.Status.NO_CONTENT).header("requestId", requestId).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).header("requestId", requestId).build();
         }
     }
 
