@@ -2,6 +2,7 @@ package com.example.products.api.v1.resources;
 
 import com.example.products.lib.Hello;
 import com.example.products.services.config.MicroserviceLocations;
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -42,6 +43,7 @@ import java.util.logging.Level;
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@CrossOrigin
 public class ProductsResource {
 
     private Logger log = Logger.getLogger(ProductsResource.class.getName());

@@ -98,8 +98,8 @@ public class CategoriesResource {
                     examples = @ExampleObject(name = "Creating category", value = "{\n" +
                             "    \"name\": \"Sladoled\"\n" +
                             "}")))
-    public Response careateCategory(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
-                                    @RequestBody(
+    public Response createCategory(@Parameter(hidden = true) @HeaderParam("requestId") String requestId,
+                                   @RequestBody(
             description = "DTO object with category.",
             required = true, content = @Content(
             schema = @Schema(implementation = Category.class))) Category category) {
