@@ -7,6 +7,10 @@ kumuluzee:
     base-url: http://localhost:8080
     http:
       port: 8080
+  cors-filter:
+    annotations:
+      my-resource:
+        allow-origin: "*"
   datasources:
     - jndi-name: jdbc/ProductsDS
       connection-url: jdbc:postgresql://localhost:5433/products

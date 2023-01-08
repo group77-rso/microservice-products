@@ -3,6 +3,7 @@ package com.example.products.api.v1.resources;
 import com.example.products.lib.Category;
 import com.example.products.lib.Product;
 import com.example.products.services.beans.CategoryBean;
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
 @Path("/categories")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@CrossOrigin
 public class CategoriesResource {
 
     private Logger log = Logger.getLogger(CategoriesResource.class.getName());

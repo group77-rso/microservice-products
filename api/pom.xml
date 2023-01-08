@@ -35,6 +35,11 @@
         </dependency>
 
         <dependency>
+            <artifactId>kumuluzee-cors</artifactId>
+            <groupId>com.kumuluz.ee.cors</groupId>
+        </dependency>
+
+        <dependency>
             <groupId>com.kumuluz.ee.openapi</groupId>
             <artifactId>kumuluzee-openapi-mp-ui</artifactId>
         </dependency>
