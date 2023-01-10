@@ -48,5 +48,4 @@ kumuluzee:
       </Configuration>'
 rest-properties:
   maintenance-mode: false
-microservice-locations:
-  merchants: http://localhost:8081
+  broken: false

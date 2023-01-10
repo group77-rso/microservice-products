@@ -1,7 +1,6 @@
 package com.example.products.api.v1.resources;
 
 import com.example.products.lib.Hello;
-import com.example.products.services.config.MicroserviceLocations;
 import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -24,13 +23,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -51,10 +43,6 @@ public class ProductsResource {
     @Inject
     private ProductBean productBean;
 
-    @Inject
-    private MicroserviceLocations microserviceLocations;
-    private static HttpURLConnection conn;
-
     @Context
     protected UriInfo uriInfo;
 
@@ -72,54 +60,6 @@ public class ProductsResource {
         List<Product> products = productBean.getProductsFilter(uriInfo);
         log.log(Level.INFO, String.format("Listing %d products", products.size()) + " - requestId: " + requestId);
         return Response.status(Response.Status.OK).header("requestId", requestId).entity(products).build();
-    }
-
-    // todo: remove/repurpose this method!
-    @GET
-    @Path("hehe")
-    public Response testMerchants() {
-        StringBuilder responseContent = new StringBuilder();
-        System.out.println("Will connect to " + microserviceLocations.getMerchants() + "/v1/merchants");
-        try{
-            URL url = new URL(microserviceLocations.getMerchants() + "/v1/merchants");
-            conn = (HttpURLConnection) url.openConnection();
-
-            // Request setup
-            conn.setRequestMethod("GET");
-            conn.setConnectTimeout(5000);// 5000 milliseconds = 5 seconds
-            conn.setReadTimeout(5000);
-
-            // Test if the response from the server is successful
-            int status = conn.getResponseCode();
-
-            BufferedReader reader;
-            String line;
-            if (status >= 300) {
-                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
-                while ((line = reader.readLine()) != null) {
-                    responseContent.append(line);
-                }
-                reader.close();
-            }
-            else {
-                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                while ((line = reader.readLine()) != null) {
-                    responseContent.append(line);
-                }
-                reader.close();
-            }
-            log.info("response code: " + status);
-            System.out.println(responseContent.toString());
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            conn.disconnect();
-        }
-
-        return Response.status(Response.Status.NOT_MODIFIED).build();
     }
 
     @GET
@@ -250,5 +190,11 @@ public class ProductsResource {
         return Response.status(Response.Status.OK).header("requestId", requestId).entity(hello).build();
     }
 
+    @GET
+    @Path("/ping")
+    @Operation(description = "Simple ping method only to check if microservice is responding.", summary = "Ping")
+    public Response ping() {
+        return Response.status(Response.Status.OK).build();
+    }
 
 }
