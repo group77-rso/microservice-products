@@ -141,6 +141,47 @@ spec:
             initialDelaySeconds: 40
             periodSeconds: 3
 
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emails-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emails
+  template:
+    metadata:
+      labels:
+        app: emails
+    spec:
+      containers:
+        - image: barbaralipnik/emails:latest
+          name: emails
+          env:
+            - name: KUMULUZEE_CONFIG_CONSUL_AGENT
+              value: http://consul-server.ingress-nginx.svc.cluster.local:8500
+            - name: MICROSERVICE-LOCATIONS_MERCHANTS
+              value: http://merchants-service.ingress-nginx.svc.cluster.local:8081
+          ports:
+            - containerPort: 8083
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 8083
+            initialDelaySeconds: 40
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 8083
+            initialDelaySeconds: 40
+            periodSeconds: 3
+
 
 ---
 
@@ -186,6 +227,21 @@ spec:
       targetPort: 8082
   selector:
     app: scraper
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: emails-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8083
+      protocol: TCP
+      targetPort: 8083
+  selector:
+    app: emails
 
 #---
 #apiVersion: networking.k8s.io/v1
