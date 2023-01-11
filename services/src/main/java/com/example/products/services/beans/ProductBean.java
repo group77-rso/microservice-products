@@ -23,7 +23,7 @@ import com.example.products.models.entities.ProductEntity;
 @RequestScoped
 public class ProductBean {
 
-    private Logger log = Logger.getLogger(ProductBean.class.getName());
+    private final Logger log = Logger.getLogger(ProductBean.class.getName());
 
     @Inject
     private EntityManager em;
@@ -31,7 +31,7 @@ public class ProductBean {
     public List<Product> getProducts() {
 
         TypedQuery<ProductEntity> query = em.createNamedQuery(
-                "ProductsEntity.getAll", ProductEntity.class);
+                "ProductEntity.getAll", ProductEntity.class);
 
         List<ProductEntity> resultList = query.getResultList();
 

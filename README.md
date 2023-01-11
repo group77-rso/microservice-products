@@ -80,3 +80,8 @@ Available secret names:
 - `products-db`
 - `merchants-db`
 
+## GraphQl
+
+Available at: `localhost:8081/graphql`
+
+User interface at: `localhost:8081/graphiql/`
