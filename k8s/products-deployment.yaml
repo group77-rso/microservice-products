@@ -211,6 +211,47 @@ spec:
               protocol: TCP
 
 
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swagger-ui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swagger-ui
+  template:
+    metadata:
+      labels:
+        app: swagger-ui
+    spec:
+      containers:
+        - image: swaggerapi/swagger-ui:latest
+          name: swagger-ui
+          env:
+            - name: BASE_URL
+              value: /swagger
+#            - name: URLS
+#              value: "[{url: \"http://merchants-service.ingress-nginx.svc.cluster.local:8081/openapi\", name: \"Merchants\"},{url: \"http://products-service.ingress-nginx.svc.cluster.local:8080/openapi\", name: \"Products\"}]"
+            - name: URL
+              value: "../merchants/openapi"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+
+
+
+
+
+
+
+
+
 ---
 
 apiVersion: v1
@@ -286,31 +327,20 @@ spec:
   selector:
     app: frontend
 
-#---
-#apiVersion: networking.k8s.io/v1
-#kind: Ingress
-#metadata:
-#  name: products-ingress
-#  annotations:
-#    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-#    nginx.ingress.kubernetes.io/use-regex: "true"
-#    nginx.ingress.kubernetes.io/rewrite-target: /$2
-#spec:
-#  ingressClassName: nginx
-#  rules:
-#    - http:
-#        paths:
-#          - path: /products(/|$)(.*)
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: products
-#                port:
-#                  number: 8080
-##          - path: /merchants(/|$)(.*)
-##            pathType: Prefix
-##            backend:
-##              service:
-##                name: merchants
-##                port:
-##                  number: 8080
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: swagger-ui-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: swagger-ui
+

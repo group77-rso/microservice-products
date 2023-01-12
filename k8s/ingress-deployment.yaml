@@ -40,6 +40,13 @@ spec:
                 name: emails-service
                 port:
                   number: 8083
+          - path: /swagger(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: swagger-ui-service
+                port:
+                  number: 9000
           - path: /()(.*)
             pathType: Prefix
             backend:
