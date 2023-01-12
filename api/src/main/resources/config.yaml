@@ -12,8 +12,6 @@ kumuluzee:
       my-resource:
         allow-origin: "*"
   openapi-mp:
-    servlet:
-      mapping: /products/openapi
     ui:
       server-auto-config:
         enabled: true
