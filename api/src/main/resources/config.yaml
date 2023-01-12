@@ -11,6 +11,11 @@ kumuluzee:
     annotations:
       my-resource:
         allow-origin: "*"
+  openapi-mp:
+    ui:
+      server-auto-config:
+        enabled: true
+        original-uri-check: false
   datasources:
     - jndi-name: jdbc/ProductsDS
       connection-url: jdbc:postgresql://localhost:5433/products
