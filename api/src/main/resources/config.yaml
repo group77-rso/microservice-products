@@ -15,7 +15,7 @@ kumuluzee:
     ui:
       server-auto-config:
         enabled: true
-        original-uri-check: false
+        original-uri-check: true
   datasources:
     - jndi-name: jdbc/ProductsDS
       connection-url: jdbc:postgresql://localhost:5433/products
