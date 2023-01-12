@@ -35,7 +35,7 @@ docker network rm rso
 docker network create rso
 docker run -d --name pg-products -e POSTGRES_USER=dbuser -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=products -p 5432:5432 --network rso postgres:13
 docker inspect pg-products
-docker run -p 8080:8080 --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/products onlygregor/products:latest
+docker run -p 8080:8080 --name app_products --network rso -e KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:postgresql://pg-products:5432/postgres barbaralipnik/products:latest
 ```
 
 ## Consul
